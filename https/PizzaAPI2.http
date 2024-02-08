@@ -1,0 +1,75 @@
+@PizzaAPI2_HostAddress = http://localhost:5017
+
+
+### INGREDIENTES
+GET {{PizzaAPI2_HostAddress}}/ingrediente/
+Accept: application/json
+
+###
+
+GET {{PizzaAPI2_HostAddress}}/ingrediente/2
+Accept: application/json
+
+###
+POST {{PizzaAPI2_HostAddress}}/ingrediente/
+Content-Type: application/json
+
+{
+    "Nome": "Tomate",
+    "Vegano": true
+}
+
+
+###
+POST {{PizzaAPI2_HostAddress}}/ingrediente/
+Content-Type: application/json
+
+{
+    "Nome": "Queijo",
+    "Vegano": false
+}
+
+###
+POST {{PizzaAPI2_HostAddress}}/ingrediente/
+Content-Type: application/json
+
+{
+    "Nome": "Abacaxi",
+    "Vegano": true
+}
+
+###
+POST {{PizzaAPI2_HostAddress}}/ingrediente/
+Content-Type: application/json
+
+{
+    "Nome": "Calabresa",
+    "Vegano": false
+}
+
+###
+
+GET {{PizzaAPI2_HostAddress}}/pizza/
+Accept: application/json
+
+###
+
+POST {{PizzaAPI2_HostAddress}}/pizza/
+Content-Type: application/json
+
+{
+    "Nome": "Pizza de queijo",
+    "IngredientesIds": [1,2]
+}
+
+###
+
+POST {{PizzaAPI2_HostAddress}}/pizza/
+Content-Type: application/json
+
+{
+    "Nome": "Pizza de calabresa",
+    "IngredientesIds": [1,2,4]
+}
+###
+

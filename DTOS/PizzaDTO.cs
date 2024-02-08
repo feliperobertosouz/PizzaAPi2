@@ -1,9 +1,9 @@
 
 public class PizzaDTO{
     
-    public string Nome;
+    public string Nome {get;set;}
 
-    public ICollection<IngredienteDTO> ingredientes;
+    public ICollection<IngredientePizzaDTO> ingredientes {get;set;}
 
     public PizzaDTO()
     {

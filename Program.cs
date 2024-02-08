@@ -15,6 +15,7 @@ builder.Services.AddDbContext<DataBaseContext>(options =>{
 
 builder.Services.AddAutoMapper(typeof(PizzaMapper),typeof(Program));
 builder.Services.AddScoped<IIngredienteRepositorie, IngredienteRepositorie>();
+builder.Services.AddScoped<IPizzaRepositorie, PizzaRepositorie>();
 
 var app = builder.Build();
 

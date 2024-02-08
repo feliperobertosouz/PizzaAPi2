@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PizzaAPI2.Models;
 using PizzaAPI2.Repositories;
+
 [ApiController]
 [Route("[controller]")]
 public class IngredienteController : ControllerBase{
