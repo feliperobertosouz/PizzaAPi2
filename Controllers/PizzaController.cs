@@ -39,4 +39,10 @@ public class PizzaController : ControllerBase{
           return Ok(pizzaRequestDTO);
      }
 
+     [HttpDelete("{id}")]
+    public IActionResult deletePizza(int id){
+        _pizzaRepositorie.Delete(id);
+        return NoContent();
+    }
+
 }

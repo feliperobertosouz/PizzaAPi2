@@ -28,10 +28,6 @@ public class PizzaRepositorie : IPizzaRepositorie
 
         Console.WriteLine($"Nova Pizza: {novaPizza.Nome}");
         Console.WriteLine("Ingredientes:");
-        foreach (var ingrediente in novaPizza.ingredientes)
-        {
-            Console.WriteLine($"  - {ingrediente.Nome}");
-        }
         _dataBaseContext.Add(novaPizza);
         _dataBaseContext.SaveChanges();
 
@@ -39,7 +35,10 @@ public class PizzaRepositorie : IPizzaRepositorie
 
     public void Delete(int id)
     {
-        throw new NotImplementedException();
+        var pizza = _dataBaseContext.Pizzas.Find(id);
+        _dataBaseContext.Pizzas.Remove(pizza);
+        _dataBaseContext.SaveChanges();
+
     }
 
     public PizzaDTO get(int id)
