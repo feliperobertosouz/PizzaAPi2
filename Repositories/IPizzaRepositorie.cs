@@ -1,4 +1,5 @@
 using PizzaAPI2.Dtos;
+using PizzaAPI2.Models;
 
 public interface IPizzaRepositorie{
 
@@ -6,9 +7,9 @@ public interface IPizzaRepositorie{
 
     public PizzaDTO get(int id);
 
-    public List<PizzaDTO> getAll();
+    public List<PizzaListDTO> getAll();
 
     public void Delete(int id);
 
-    public void Update(PizzaDTO pizzaDTO, int id);
+    public void Update(PizzaRequestDTO pizzaDTO, int id);
 }

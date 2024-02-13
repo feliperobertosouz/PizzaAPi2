@@ -41,8 +41,24 @@ public class PizzaController : ControllerBase{
 
      [HttpDelete("{id}")]
     public IActionResult deletePizza(int id){
-        _pizzaRepositorie.Delete(id);
+     try{
+           _pizzaRepositorie.Delete(id);
         return NoContent();
+     }catch(Exception e){
+          return BadRequest($"Houve algum problema ao deletar a pizza de id{id}: {e.Message}");
+     }
+       
     }
+
+     [HttpPut("{id}")]
+     public IActionResult updatePizza(PizzaRequestDTO pizzaRequestDTO, int id){
+          try{
+               _pizzaRepositorie.Update(pizzaRequestDTO, id);
+               return Ok(pizzaRequestDTO);
+          }catch(Exception e){
+               return BadRequest($"Houve um erro ao tentar atualizar a pizza de id{id}: {e.Message}");
+          }
+          
+     }
 
 }

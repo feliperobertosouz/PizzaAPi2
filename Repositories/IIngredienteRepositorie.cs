@@ -1,12 +1,14 @@
+using PizzaAPI2.Models;
+
 namespace PizzaAPI2.Repositories;
 
 public interface IIngredienteRepositorie{
 
     public void Add(IngredienteDTO ingredienteDTO);
 
-    public List<IngredienteDTO> GetAll();
+    public List<Ingrediente> GetAll();
 
-    public IngredienteDTO Get(int id);
+    public Ingrediente Get(int id);
 
     public void Delete(int id);
 

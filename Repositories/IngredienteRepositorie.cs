@@ -16,34 +16,60 @@ public class IngredienteRepositorie : IIngredienteRepositorie
      _dataBaseContext = dataBaseContext;
      _mapper = mapper;   
     }
+    
     public void Add(IngredienteDTO ingredienteDTO)
     {
-       Ingrediente novoIngrediente = _mapper.Map<Ingrediente>(ingredienteDTO);
-       _dataBaseContext.Ingredientes.Add(novoIngrediente);
-       _dataBaseContext.SaveChanges();
+    if(ingredienteDTO.Nome == null || ingredienteDTO.Vegano == null){
+        throw new NullReferenceException("Informe o nome do ingrediente e se ele é vegano ou não");
+    }
+    using (var transaction = _dataBaseContext.Database.BeginTransaction()){
+        try{
+            Ingrediente novoIngrediente = _mapper.Map<Ingrediente>(ingredienteDTO);
+            _dataBaseContext.Ingredientes.Add(novoIngrediente);
+            _dataBaseContext.SaveChanges();
+            transaction.Commit();
+        }catch(Exception e){
+            transaction.Rollback();
+            Console.WriteLine($"Erro ao registrar um ingrediente: {e.Message}");
+            throw;
+        }
+    }
     }
 
     public void Delete(int id)
     {
-        throw new NotImplementedException();
+        var ingrediente = _dataBaseContext.Ingredientes.Find(id);
+        if(ingrediente == null){
+            throw new InvalidOperationException("Não é possivel encontrar o ingrediente");
+        }
+        _dataBaseContext.Ingredientes.Remove(ingrediente);
+        _dataBaseContext.SaveChanges();
     }
 
-    public IngredienteDTO Get(int id)
+    public Ingrediente Get(int id)
     {
         var ingrediente = _dataBaseContext.Ingredientes.Find(id);
-        var ingredientDTO = _mapper.Map<IngredienteDTO>(ingrediente);
-        return ingredientDTO;
+        if(ingrediente == null){
+            return null;
+        }
+        return ingrediente;
     }
 
-    public List<IngredienteDTO> GetAll()
+    public List<Ingrediente> GetAll()
     {
      var ingredientes = _dataBaseContext.Ingredientes.ToList();
-     var ingredientesDtos = _mapper.Map<List<IngredienteDTO>>(ingredientes);
-     return ingredientesDtos;
+     return ingredientes;
     }
 
     public void Update(int id, IngredienteDTO ingredienteDTO)
     {
-        throw new NotImplementedException();
+        var ingrediente = _dataBaseContext.Ingredientes.Find(id);
+        if (ingrediente == null){
+           throw new InvalidOperationException("Não é possivel encontrar o ingrediente para o atualizar");
+        }
+
+        _mapper.Map(ingredienteDTO, ingrediente);
+         _dataBaseContext.Entry(ingrediente).CurrentValues.SetValues(ingrediente);
+        _dataBaseContext.SaveChanges();
     }
 }

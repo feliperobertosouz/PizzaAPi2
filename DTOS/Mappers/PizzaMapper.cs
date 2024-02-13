@@ -9,6 +9,6 @@ public class PizzaMapper : Profile{
         CreateMap<Pizza, PizzaDTO>().ReverseMap();
         CreateMap<Ingrediente, IngredienteDTO>().ReverseMap();
         CreateMap<Pizza, PizzaRequestDTO>().ReverseMap();
-        CreateMap<Ingrediente, IngredientePizzaDTO>().ReverseMap();
+        CreateMap<PizzaListDTO, Pizza>().ReverseMap();
     }
 }

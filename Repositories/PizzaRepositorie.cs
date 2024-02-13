@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PizzaAPI2.Context;
@@ -20,22 +21,33 @@ public class PizzaRepositorie : IPizzaRepositorie
 
     public void Add(PizzaRequestDTO pizzaRequestDTO)
     {
-        var novaPizza = _mapper.Map<Pizza>(pizzaRequestDTO);
+        if(pizzaRequestDTO.Nome == null || pizzaRequestDTO.IngredientesIds == null){
+            throw new NullReferenceException("Por favor informe o nome/ingredientes da pizza");
+        }
 
-        var ingredients = _dataBaseContext.Ingredientes.Where(i => pizzaRequestDTO.IngredientesIds.Contains(i.IngredienteID)).ToList();
-
-        novaPizza.ingredientes = ingredients;
-
-        Console.WriteLine($"Nova Pizza: {novaPizza.Nome}");
-        Console.WriteLine("Ingredientes:");
-        _dataBaseContext.Add(novaPizza);
-        _dataBaseContext.SaveChanges();
-
+       
+        using (var transaction = _dataBaseContext.Database.BeginTransaction()){
+            try{
+                var novaPizza = _mapper.Map<Pizza>(pizzaRequestDTO);
+                var ingredients = _dataBaseContext.Ingredientes.Where(i => pizzaRequestDTO.IngredientesIds.Contains(i.IngredienteID)).ToList();
+                novaPizza.ingredientes = ingredients;
+                _dataBaseContext.Add(novaPizza);
+                _dataBaseContext.SaveChanges();
+                transaction.Commit();
+            }catch(Exception e){
+                Console.WriteLine($"Erro ao tentar salvar a pizza: {e.Message}");
+                transaction.Rollback();
+                throw;
+            }
+        }
     }
 
     public void Delete(int id)
     {
         var pizza = _dataBaseContext.Pizzas.Find(id);
+        if(pizza == null){
+            throw new NullReferenceException($"Não foi possivel encontrar uma pizza com id {id}");
+        }
         _dataBaseContext.Pizzas.Remove(pizza);
         _dataBaseContext.SaveChanges();
 
@@ -43,20 +55,50 @@ public class PizzaRepositorie : IPizzaRepositorie
 
     public PizzaDTO get(int id)
     {
-        var pizza = _dataBaseContext.Pizzas.Include(p=> p.ingredientes).ToList();
-        return _mapper.Map<PizzaDTO>(pizza);
+        var pizza = _dataBaseContext.Pizzas.Find(id);
+        if(pizza == null){
+            return null;
+        }
+        var pizzaSearch = _dataBaseContext.Pizzas.Include(p=> p.ingredientes).ToList();
+        return _mapper.Map<PizzaDTO>(pizzaSearch);
     }
 
-    public List<PizzaDTO> getAll()
+    public List<PizzaListDTO> getAll()
     {
         var pizzas = _dataBaseContext.Pizzas.Include(p => p.ingredientes).ToList();
-        List<PizzaDTO> PizzasDtos = _mapper.Map<List<PizzaDTO>>(pizzas);
-        
-        return PizzasDtos;
+        var pizzasDtos = _mapper.Map<List<PizzaListDTO>>(pizzas);
+
+    return pizzasDtos;
     }
 
-    public void Update(PizzaDTO pizzaDTO, int id)
+    public void Update(PizzaRequestDTO pizzaDTO, int id)
     {
-        throw new NotImplementedException();
+        var pizza = _dataBaseContext.Pizzas.Include(p => p.ingredientes).FirstOrDefault(p => p.PizzaId == id);
+        if(pizza == null){
+            throw new NullReferenceException($"Não foi possivel encontrar uma pizza com id {id}");
+        }
+        if(pizzaDTO.Nome == null || pizzaDTO.IngredientesIds == null){
+            throw new NullReferenceException($"Informe o nome e ingredientes da pizza por favor");
+        }
+
+        using (var transaction = _dataBaseContext.Database.BeginTransaction()){
+            try{
+                _mapper.Map(pizzaDTO, pizza);
+                var ingredients = _dataBaseContext.Ingredientes.Where(i => pizzaDTO.IngredientesIds.Contains(i.IngredienteID)).ToList();
+                pizza.ingredientes.Clear();
+                foreach (var ingredient in ingredients)
+                    {
+                    pizza.ingredientes.Add(ingredient);
+                    }
+
+                _dataBaseContext.SaveChanges();
+                transaction.Commit();
+            }catch(Exception e){
+                Console.WriteLine($"Erro ao tentar atualizar a pizza: {e.Message}");
+                transaction.Rollback();
+                throw;
+            }
+        }
+        
     }
 }
